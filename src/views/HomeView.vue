@@ -1,203 +1,653 @@
-<template>
-  <div class="home">
-
-    <Card class="login-card">
-
-      <template #title>
-        🎬 MovieBase
-      </template>
-
-      <template #subtitle>
-        Discover and save your favourite movies.
-      </template>
-
-      <!-- Show the login form if the user isn't logged in -->
-      <div v-if="!authStore.isLoggedIn">
-
-        <Form
-          :validation-schema="schema"
-          @submit="onSubmit"
-        >
-
-          <div class="field">
-
-            <label for="username">Username</label>
-
-            <Field
-              name="username"
-              v-slot="{ field }"
-            >
-              <InputText
-                v-bind="field"
-                id="username"
-                placeholder="Enter your username"
-              />
-            </Field>
-
-            <ErrorMessage
-              name="username"
-              class="error"
-            />
-
-          </div>
-
-          <div class="field">
-
-            <label for="password">Password</label>
-
-            <Field
-              name="password"
-              v-slot="{ field }"
-            >
-              <Password
-                v-bind="field"
-                id="password"
-                :feedback="false"
-                toggleMask
-                placeholder="Enter your password"
-              />
-            </Field>
-
-            <ErrorMessage
-              name="password"
-              class="error"
-            />
-
-          </div>
-
-          <Button
-            type="submit"
-            label="Login"
-            icon="pi pi-sign-in"
-            class="login-button"
-          />
-
-        </Form>
-
-      </div>
-
-      <!-- If the user is already logged in -->
-      <div v-else>
-
-        <h2>Welcome back, {{ authStore.username }} 👋</h2>
-
-        <p>
-          You're already logged in.
-        </p>
-
-        <RouterLink to="/search">
-
-          <Button
-            label="Go to Search"
-            icon="pi pi-search"
-          />
-
-        </RouterLink>
-
-      </div>
-
-    </Card>
-
-  </div>
-</template>
-
 <script setup>
-
-// Vue Router
+// Vue
+import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { RouterLink } from 'vue-router'
 
-// Pinia store
+// Pinia
 import { useAuthStore } from '../stores/authStore'
 
-// PrimeVue components
-import Card from 'primevue/card'
-import Button from 'primevue/button'
-import InputText from 'primevue/inputtext'
-import Password from 'primevue/password'
+// GSAP
+import { gsap } from 'gsap'
 
 // VeeValidate
 import { Form, Field, ErrorMessage } from 'vee-validate'
 
-// Yup validation
-import * as yup from 'yup'
+// PrimeVue
+import InputText from 'primevue/inputtext'
+import Password from 'primevue/password'
+import Button from 'primevue/button'
 
-// Router instance
+// Router
 const router = useRouter()
 
-// Authentication store
+// Auth store
 const authStore = useAuthStore()
 
 // Validation rules
-const schema = yup.object({
+function validateUsername(value) {
 
-  username: yup
-    .string()
-    .required('Username is required')
-    .min(3, 'Username must contain at least 3 characters'),
+    if (!value || !value.trim()) {
+        return 'Username is required.'
+    }
 
-  password: yup
-    .string()
-    .required('Password is required')
-    .min(6, 'Password must contain at least 6 characters')
+    if (value.trim().length < 3) {
+        return 'Username must be at least 3 characters.'
+    }
 
-})
+    return true
+}
 
-// Called when the form is valid
-function onSubmit(values) {
+function validatePassword(value) {
 
-  // Save the username in Pinia
-  authStore.login(values.username)
+    if (!value) {
+        return 'Password is required.'
+    }
 
-  // Go to the Search page
-  router.push('/search')
+    if (value.length < 6) {
+        return 'Password must be at least 6 characters.'
+    }
+
+    return true
+}
+
+// Login
+function login(values) {
+
+    authStore.login(values.username.trim())
+
+    router.push('/search')
 
 }
 
+// Search button after login
+function goToSearch() {
+
+    router.push('/search')
+
+}
+
+// Animation
+onMounted(() => {
+
+    gsap.from('.hero', {
+
+        opacity: 0,
+        x: -60,
+        duration: 1,
+        ease: 'power3.out'
+
+    })
+
+    gsap.from('.login-box', {
+
+        opacity: 0,
+        x: 60,
+        duration: 1,
+        delay: 0.2,
+        ease: 'power3.out'
+
+    })
+
+})
 </script>
+
+<template>
+
+<div class="home">
+
+    <div class="background"></div>
+
+    <!-- HERO -->
+
+    <section class="hero">
+
+        <div class="tag">
+
+            <i class="pi pi-video"></i>
+
+            <span>MOVIEBASE ORIGINALS</span>
+
+        </div>
+
+        <h1>
+
+            Discover
+
+            <span>your next</span>
+
+            favourite movie.
+
+        </h1>
+
+        <p>
+
+            Search thousands of movies,
+            build your own collection,
+            and save your favourites.
+
+        </p>
+
+    </section>
+
+    <!-- LOGIN -->
+
+    <div class="login-box">
+
+        <template v-if="!authStore.isLoggedIn">
+
+            <h2>
+
+                Welcome Back
+
+            </h2>
+
+            <p class="subtitle">
+
+                Sign in to continue your movie journey.
+
+            </p>
+
+            <Form
+                @submit="login"
+                class="login-form"
+            >
+
+                <!-- USERNAME -->
+
+                <div class="field">
+
+                    <label for="username">
+
+                        Username
+
+                    </label>
+
+                    <Field
+                        name="username"
+                        :rules="validateUsername"
+                        v-slot="{ field, meta }"
+                    >
+
+                        <InputText
+                            id="username"
+                            v-bind="field"
+                            placeholder="Enter username"
+                            :class="{
+                                'input-error': meta.touched && !meta.valid
+                            }"
+                        />
+
+                    </Field>
+
+                    <ErrorMessage
+                        name="username"
+                        class="error-message"
+                    />
+
+                </div>
+
+                <!-- PASSWORD -->
+
+                <div class="field">
+
+                    <label for="password">
+
+                        Password
+
+                    </label>
+
+                    <Field
+                        name="password"
+                        :rules="validatePassword"
+                        v-slot="{ field, meta }"
+                    >
+
+                        <Password
+                            id="password"
+                            v-bind="field"
+                            :feedback="false"
+                            toggleMask
+                            placeholder="Enter password"
+                            :class="{
+                                'input-error': meta.touched && !meta.valid
+                            }"
+                        />
+
+                    </Field>
+
+                    <ErrorMessage
+                        name="password"
+                        class="error-message"
+                    />
+
+                </div>
+
+                <!-- LOGIN -->
+
+                <Button
+
+                    type="submit"
+
+                    label="Continue"
+
+                    icon="pi pi-arrow-right"
+
+                    class="login-btn"
+
+                />
+
+            </Form>
+
+        </template>
+
+        <!-- LOGGED IN -->
+
+        <div
+            v-else
+            class="welcome"
+        >
+
+            <div class="welcome-icon">
+
+                🎬
+
+            </div>
+
+            <h2>
+
+                Welcome back,
+
+                {{ authStore.username }}
+
+            </h2>
+
+            <p>
+
+                Ready to discover your next favourite movie?
+
+            </p>
+
+            <Button
+
+                label="Search Movies"
+
+                icon="pi pi-search"
+
+                class="search-movies-button"
+
+                @click="goToSearch"
+
+            />
+
+        </div>
+
+    </div>
+
+</div>
+
+</template>
 
 <style scoped>
 
 .home{
-    display:flex;
-    justify-content:center;
+
+    min-height:90vh;
+
+    display:grid;
+
+    grid-template-columns:1fr 500px;
+
     align-items:center;
-    min-height:85vh;
-    padding:30px;
+
+    gap:80px;
+
+    position:relative;
+
 }
 
-.login-card{
-    width:420px;
-    padding:20px;
+.background{
+
+    position:absolute;
+
+    inset:0;
+
+    background:
+        radial-gradient(
+            circle at top left,
+            #E5091440,
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at bottom right,
+            #E5091420,
+            transparent 35%
+        );
+
+    z-index:-1;
+
+}
+
+/* HERO */
+
+.hero h1{
+
+    font-size:72px;
+
+    line-height:1;
+
+    font-weight:900;
+
+    color:white;
+
+    margin:20px 0;
+
+}
+
+.hero h1 span{
+
+    color:#E50914;
+
+}
+
+.hero p{
+
+    color:#b5b5b5;
+
+    font-size:20px;
+
+    line-height:1.8;
+
+    max-width:520px;
+
+}
+
+.tag{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    color:white;
+
+    margin-bottom:20px;
+
+    font-size:15px;
+
+    font-weight:700;
+
+    letter-spacing:3px;
+
+    text-transform:uppercase;
+
+}
+
+.tag i{
+
+    color:#E50914;
+
+    font-size:22px;
+
+}
+
+/* LOGIN */
+
+.login-box{
+
+    background:rgba(24,24,28,.96);
+
+    backdrop-filter:blur(18px);
+
+    border:1px solid rgba(255,255,255,.08);
+
+    border-radius:28px;
+
+    padding:45px;
+
+    box-shadow:
+        0 0 120px rgba(229,9,20,.08),
+        0 30px 60px rgba(0,0,0,.55);
+
+}
+
+.login-box h2{
+
+    color:white;
+
+    margin-bottom:8px;
+
+}
+
+.subtitle{
+
+    color:#b3b3b3;
+
+    margin-bottom:30px;
+
+}
+
+.login-form{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:20px;
+
 }
 
 .field{
+
     display:flex;
+
     flex-direction:column;
-    margin-bottom:20px;
+
+    gap:8px;
+
 }
 
 label{
-    margin-bottom:8px;
+
+    color:white;
+
     font-weight:600;
+
 }
 
-.error{
-    color:#ff4d4f;
-    font-size:14px;
-    margin-top:5px;
+.error-message{
+
+    color:#ff6b6b;
+
+    font-size:13px;
+
+    min-height:18px;
+
 }
 
-.login-button{
+.input-error{
+
+    border-color:#E50914 !important;
+
+}
+
+.login-btn{
+
+    margin-top:15px;
+
     width:100%;
+
+    height:58px;
+
+    font-size:18px;
+
+    font-weight:700;
+
+    border-radius:14px;
+
+    background:#E50914 !important;
+
+    border:none !important;
+
+    color:white !important;
+
+    transition:.3s;
+
 }
 
-h2{
-    margin-bottom:10px;
+.login-btn:hover{
+
+    background:#ff2733 !important;
+
+    transform:translateY(-5px);
+
+    box-shadow:0 15px 35px rgba(229,9,20,.45);
+
 }
 
-p{
-    margin-bottom:20px;
+/* WELCOME */
+
+.welcome{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:18px;
+
+    align-items:center;
+
+    text-align:center;
+
+}
+
+.welcome-icon{
+
+    width:70px;
+
+    height:70px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    background:#E50914;
+
+    border-radius:20px;
+
+    font-size:32px;
+
+    box-shadow:0 15px 35px rgba(229,9,20,.3);
+
+}
+
+.welcome h2{
+
+    color:white;
+
+    margin:0;
+
+}
+
+.welcome p{
+
+    color:#b3b3b3;
+
+}
+
+.search-movies-button{
+
+    width:100%;
+
+}
+
+:deep(.search-movies-button.p-button){
+
+    background:#E50914 !important;
+
+    border:1px solid #E50914 !important;
+
+    color:white !important;
+
+    border-radius:16px;
+
+    height:58px;
+
+    font-size:17px;
+
+    font-weight:700;
+
+    transition:.3s;
+
+}
+
+:deep(.search-movies-button.p-button:hover){
+
+    background:#ff2733 !important;
+
+    border-color:#ff2733 !important;
+
+    transform:translateY(-4px);
+
+    box-shadow:0 12px 35px rgba(229,9,20,.45);
+
+}
+
+:deep(.p-inputtext),
+:deep(.p-password){
+
+    width:100%;
+
+}
+
+:deep(.p-password-input){
+
+    width:100%;
+
+}
+
+/* MOBILE */
+
+@media(max-width:1000px){
+
+    .home{
+
+        grid-template-columns:1fr;
+
+        text-align:center;
+
+    }
+
+    .hero{
+
+        margin-top:40px;
+
+    }
+
+    .hero h1{
+
+        font-size:48px;
+
+    }
+
+    .hero p{
+
+        margin:auto;
+
+    }
+
+    .login-box{
+
+        max-width:500px;
+
+        width:100%;
+
+        margin:auto;
+
+    }
+
 }
 
 </style>
