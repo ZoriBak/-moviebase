@@ -1,89 +1,100 @@
-# 🎬 MovieBase
+# MovieBase
 
-MovieBase is a Vue 3 movie discovery application built as part of a web development assignment.
+MovieBase is a Vue 3 movie discovery application that allows users to search for movies, view detailed information, and save movies to their favourites.
 
-The application allows users to search for movies using the OMDb API, view detailed movie information, and create a personal collection of favourite movies.
+The project uses the OMDb API and combines Vue Router, Pinia, VeeValidate, PrimeVue, GSAP, and SCSS.
 
-## ✨ Features
+---
 
-- 🔐 Login with form validation
-- 🔎 Search movies using the OMDb API
-- 🎬 Movie detail pages
-- ⭐ IMDb ratings
-- ❤️ Add and remove favourite movies
-- 📚 Personal movie collection
-- 🔒 Protected Favorites route
-- 🎨 Netflix-inspired responsive interface
-- ✨ CSS hover animations
-- ✨ Vue transitions
-- 🎞️ GSAP movie detail animation
-- 📱 Responsive design
-- 🧭 Vue Router navigation
-- 🗃️ Pinia state management
-- 🎨 PrimeVue components
+## Features
 
-## 🛠️ Technologies
+- User login with validation using VeeValidate
+- Protected favourites page using Vue Router navigation guards
+- Search for movies using the OMDb API
+- View detailed movie information
+- Add and remove movies from favourites
+- State management with Pinia
+- Loading and error states
+- CSS and GSAP animations
+- Responsive design
+- PrimeVue components
+
+---
+
+## Technologies
 
 - Vue 3
 - Vue Router
 - Pinia
-- PrimeVue
 - VeeValidate
+- PrimeVue
 - GSAP
 - SCSS
 - OMDb API
+- Vite
 
-## 📁 Project Structure
+---
+
+## Project Structure
 
 ```text
 src/
-├── main.js
-├── App.vue
+├── assets/
+├── components/
+│   └── MovieCard.vue
 ├── router/
 │   └── index.js
 ├── stores/
 │   ├── authStore.js
 │   └── favoritesStore.js
+├── styles/
+│   ├── animations.scss
+│   ├── main.scss
+│   └── variables.scss
 ├── views/
+│   ├── FavoritesView.vue
 │   ├── HomeView.vue
-│   ├── SearchView.vue
 │   ├── MovieDetail.vue
-│   └── FavoritesView.vue
-├── components/
-│   └── MovieCard.vue
-└── styles/
-    └── main.scss
+│   └── SearchView.vue
+├── App.vue
+└── main.js
 ```
 
-## 🔑 OMDb API Key
+---
 
-MovieBase uses the free OMDb API.
+## OMDb API Setup
 
-Request an API key from:
+MovieBase uses the OMDb API to search for movies and retrieve movie details.
+
+Request a free API key from:
 
 https://www.omdbapi.com/apikey.aspx
 
-After receiving the key, add it to the API requests in:
+Add your API key to the files that use the OMDb API:
 
-```text
-src/views/SearchView.vue
-src/views/MovieDetail.vue
+- `src/views/SearchView.vue`
+- `src/views/MovieDetail.vue`
+
+Example:
+
+```js
+const API_KEY = 'efb26b8d'
 ```
 
-Replace the existing API key with your own key.
+---
 
-## 🚀 Installation
+## How to Run Locally
 
 Clone the repository:
 
 ```bash
-git clone YOUR_GITHUB_REPOSITORY_URL
+git clone https://github.com/ZoriBak/-moviebase.git
 ```
 
-Enter the project folder:
+Navigate to the project:
 
 ```bash
-cd MovieBase
+cd -moviebase
 ```
 
 Install the dependencies:
@@ -98,43 +109,23 @@ Start the development server:
 npm run dev
 ```
 
-The application will then be available at the local URL shown in the terminal.
+The application will be available at the local URL shown in your terminal, usually:
 
-## 🔐 Login
+```text
+http://localhost:5173
+```
 
-The login form requires:
+---
 
-- Username: minimum 3 characters
-- Password: minimum 6 characters
+## Routes
 
-The password is only validated on the client side as required by the assignment. No real account or password verification is performed.
+| Route | Description |
+|---|---|
+| `/` | Home and login page |
+| `/search` | Search for movies |
+| `/movie/:id` | Movie details |
+| `/favorites` | Saved favourite movies |
 
-## ❤️ Favorites
+The favourites route is protected, so users must be logged in to access it.
 
-Users can add movies to their personal collection from the movie detail page.
-
-The Favorites page is protected and can only be accessed after logging in.
-
-Logging out resets the authentication state.
-
-## 🎨 Design
-
-The interface uses a dark, Netflix-inspired visual style with:
-
-- Dark backgrounds
-- Netflix red accents
-- Movie poster cards
-- Hover animations
-- GSAP animations
-- Responsive layouts
-
-## 👨‍🎓 Author
-
-**Zori Bak**
-
-International Digital Experience Design  
-Thomas More University
-
-## 📚 Assignment
-
-MovieBase was created to demonstrate the use of Vue 3, Vue Router, Pinia, PrimeVue, VeeValidate, animations, API integration, and reusable components in a single application.
+---
