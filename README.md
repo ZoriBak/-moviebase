@@ -70,7 +70,7 @@ Request a free API key from:
 
 https://www.omdbapi.com/apikey.aspx
 
-Add your API key to the files that use the OMDb API:
+After receiving your API key, add it to the files that use the OMDb API:
 
 - `src/views/SearchView.vue`
 - `src/views/MovieDetail.vue`
@@ -78,7 +78,7 @@ Add your API key to the files that use the OMDb API:
 Example:
 
 ```js
-const API_KEY = 'efb26b8d'
+const API_KEY = 'YOUR_API_KEY'
 ```
 
 ---
